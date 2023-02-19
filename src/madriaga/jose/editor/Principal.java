@@ -1,5 +1,8 @@
 package madriaga.jose.editor;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -27,7 +30,7 @@ class Marco extends JFrame{
 }
 class Panel extends JPanel{
     public Panel(){
-        //---------------men---------------------
+        //---------------menu---------------------
         JPanel panelMenu=new JPanel();
         menu =new JMenuBar();
 
@@ -85,6 +88,38 @@ class Panel extends JPanel{
 
         if(menu.equals("archivo")){
             archivo.add(elementoItem);
+            if(accion.equals("nuevo")){
+                elementoItem.addActionListener(new ActionListener(){
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        creaPanel();
+                    }
+                });
+            }
+            else if(accion.equals("abrir")){
+                elementoItem.addActionListener(new ActionListener(){
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        creaPanel();
+                    }
+                });
+            }
+            else if(accion.equals("guardar")){
+                elementoItem.addActionListener(new ActionListener(){
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        creaPanel();
+                    }
+                });
+            }
+            else if(accion.equals("guardarComo")){
+                elementoItem.addActionListener(new ActionListener(){
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        creaPanel();
+                    }
+                });
+            }
         }else if(menu.equals("editar")){
             editar.add(elementoItem);
         }else if(menu.equals("seleccion")){
