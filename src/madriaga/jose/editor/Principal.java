@@ -230,7 +230,7 @@ class Panel extends JPanel{
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         numeracion=!numeracion;
-                        Utilidades.viewNumeracion(contadorPanel, numeracion, listAreaDeTexto, listScrool);
+                        Utilidades.viewNumeracion(numeracion, listAreaDeTexto, listScrool);
                     }
                     
                 });

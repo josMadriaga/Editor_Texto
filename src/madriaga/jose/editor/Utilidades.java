@@ -28,7 +28,7 @@ public class Utilidades {
         }
         //setRowHeaderView= agrega una columna al margen izq en el que se agrega la numeracion
     }
-    public static void viewNumeracion(int cont, boolean numeracion,ArrayList<JTextPane> textArea, ArrayList<JScrollPane> scroll){
+    public static void viewNumeracion(boolean numeracion,ArrayList<JTextPane> textArea, ArrayList<JScrollPane> scroll){
         if(numeracion){
             for(JScrollPane sc: scroll){
                 sc.setRowHeaderView(new TextLineNumber(textArea.get(scroll.indexOf(sc))));//agrego numeracion a todas las areas de texto
