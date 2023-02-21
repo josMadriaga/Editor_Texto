@@ -71,10 +71,10 @@ class Panel extends JPanel{
         creaItem("Pegar","editar","pegar");
         //------------------------------------------------------
         //------------Elementos del menu seleccion---------------
-        creaItem("Seleccionar Todo","seleccionar","seleccion");
+        creaItem("Seleccionar Todo","seleccion","seleccion");
         //-------------------------------------------------------
         //------------Elementos del menu ver---------------------
-        creaItem("Numeracion","ver","");
+        creaItem("Numeracion","ver","numeracion");
         editar.addSeparator();
         ver.add(apariencia);
         creaItem("Normal","apariencia","");
@@ -213,16 +213,28 @@ class Panel extends JPanel{
             }
         }else if(menu.equals("seleccion")){
             seleccion.add(elementoItem);
-            elementoItem.addActionListener(new ActionListener() {
+            if(accion.equals("seleccion")){
+                elementoItem.addActionListener(new ActionListener() {
 
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    listAreaDeTexto.get(tPane.getSelectedIndex()).selectAll();;
-                }
-                
-            });
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        listAreaDeTexto.get(tPane.getSelectedIndex()).selectAll();;
+                    }
+                });
+            }
         }else if(menu.equals("ver")){
             ver.add(elementoItem);
+            if(accion.equals("numeracion")){
+                elementoItem.addActionListener(new ActionListener() {
+
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        numeracion=!numeracion;
+                        Utilidades.viewNumeracion(contadorPanel, numeracion, listAreaDeTexto, listScrool);
+                    }
+                    
+                });
+            }
         }
     }
 
@@ -239,6 +251,9 @@ class Panel extends JPanel{
         ventana.add(listScrool.get(contadorPanel));
 
         tPane.addTab("TITLE",ventana);//agrego la nueva ventana
+
+        Utilidades.viewNumeracionInicio(numeracion, listAreaDeTexto.get(contadorPanel),listScrool.get(contadorPanel));
+
         tPane.setSelectedIndex(contadorPanel);
         contadorPanel++;
         existePanel=true;
@@ -271,6 +286,7 @@ class Panel extends JPanel{
         contadorPanel--;
     }
 
+    private boolean numeracion=false;
     private int contadorPanel=0;//cuanta cuantos paneles se han creado
     private boolean existePanel=false;//nos dice si inicialmente existe un panel creado
 
