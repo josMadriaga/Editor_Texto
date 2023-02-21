@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -147,7 +148,7 @@ class Panel extends JPanel{
                                 }
 
                             } catch (IOException e1) {
-                                // TODO: handle exception
+                                e1.printStackTrace();
                             }
                         }else{
                             //Si se oprime el boton cancelar en la ventana de abrir archivo elimino el panel del area de texto que se crea por defecto
@@ -163,15 +164,49 @@ class Panel extends JPanel{
                 elementoItem.addActionListener(new ActionListener(){
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        creaPanel();
+                        if(listFile.get(tPane.getSelectedIndex()).getPath().equals("")){
+                            JFileChooser guardarArchivos=new JFileChooser();
+                            int opc=guardarArchivos.showSaveDialog(null);
+                            if(opc==JFileChooser.APPROVE_OPTION){
+                                File archivo=guardarArchivos.getSelectedFile();
+                                listFile.set(tPane.getSelectedIndex(), archivo);
+                                tPane.setTitleAt(tPane.getSelectedIndex(), archivo.getName());
+                                try{
+                                    FileWriter fw=new FileWriter(listFile.get(tPane.getSelectedIndex()).getPath());
+                                    String texto=listAreaDeTexto.get(tPane.getSelectedIndex()).getText();
+                                    for(int i=0;i<texto.length();i++){
+                                        fw.write(texto.charAt(i));//escribi carracter por carracter hasta tener la misma cantidad de carracteres 
+                                    }
+                                    fw.close();
+                                }catch(IOException el){
+                                    el.printStackTrace();
+                                }
+                            }
+                        }
                     }
                 });
             }
             else if(accion.equals("guardarComo")){
-                elementoItem.addActionListener(new ActionListener(){
+                elementoItem.addActionListener(new ActionListener(){//accion
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        creaPanel();
+                        JFileChooser guardarArchivos=new JFileChooser();
+                            int opc=guardarArchivos.showSaveDialog(null);
+                            if(opc==JFileChooser.APPROVE_OPTION){
+                                File archivo=guardarArchivos.getSelectedFile();
+                                listFile.set(tPane.getSelectedIndex(), archivo);
+                                tPane.setTitleAt(tPane.getSelectedIndex(), archivo.getName());
+                                try{
+                                    FileWriter fw=new FileWriter(listFile.get(tPane.getSelectedIndex()).getPath());
+                                    String texto=listAreaDeTexto.get(tPane.getSelectedIndex()).getText();
+                                    for(int i=0;i<texto.length();i++){
+                                        fw.write(texto.charAt(i));//escribi carracter por carracter hasta tener la misma cantidad de carracteres 
+                                    }
+                                    fw.close();
+                                }catch(IOException el){
+                                    el.printStackTrace();
+                                }
+                            }
                     }
                 });
             }
