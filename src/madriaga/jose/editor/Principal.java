@@ -18,6 +18,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextPane;
+import javax.swing.text.DefaultEditorKit;
+import javax.swing.undo.UndoManager;
 
 
 public class Principal {
@@ -61,15 +63,15 @@ class Panel extends JPanel{
         creaItem("Guardar Como","archivo","guardarComo");
         //--------------------------------------------------------
         //-----------Elementos del manu editar------------------
-        creaItem("Deshacer","editar","");
-        creaItem("Rehacer","editar","");
+        creaItem("Deshacer","editar","deshacer");
+        creaItem("Rehacer","editar","rehacer");
         editar.addSeparator();
-        creaItem("Cortar","editar","");
-        creaItem("Copiar","editar","");
-        creaItem("Pegar","editar","");
+        creaItem("Cortar","editar","cortar");
+        creaItem("Copiar","editar","copiar");
+        creaItem("Pegar","editar","pegar");
         //------------------------------------------------------
         //------------Elementos del menu seleccion---------------
-        creaItem("Seleccionar","seleccionar","");
+        creaItem("Seleccionar Todo","seleccionar","seleccion");
         //-------------------------------------------------------
         //------------Elementos del menu ver---------------------
         creaItem("Numeracion","ver","");
@@ -86,6 +88,7 @@ class Panel extends JPanel{
         listFile=new ArrayList<File>();
         listAreaDeTexto=new ArrayList<JTextPane>();
         listScrool=new ArrayList<JScrollPane>();//scroll es la barra de desplazamineto
+        listManager=new ArrayList<UndoManager>();
         //------------------------------------
 
         add(panelMenu);
@@ -165,23 +168,7 @@ class Panel extends JPanel{
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         if(listFile.get(tPane.getSelectedIndex()).getPath().equals("")){
-                            JFileChooser guardarArchivos=new JFileChooser();
-                            int opc=guardarArchivos.showSaveDialog(null);
-                            if(opc==JFileChooser.APPROVE_OPTION){
-                                File archivo=guardarArchivos.getSelectedFile();
-                                listFile.set(tPane.getSelectedIndex(), archivo);
-                                tPane.setTitleAt(tPane.getSelectedIndex(), archivo.getName());
-                                try{
-                                    FileWriter fw=new FileWriter(listFile.get(tPane.getSelectedIndex()).getPath());
-                                    String texto=listAreaDeTexto.get(tPane.getSelectedIndex()).getText();
-                                    for(int i=0;i<texto.length();i++){
-                                        fw.write(texto.charAt(i));//escribi carracter por carracter hasta tener la misma cantidad de carracteres 
-                                    }
-                                    fw.close();
-                                }catch(IOException el){
-                                    el.printStackTrace();
-                                }
-                            }
+                            guardadoComo();
                         }
                     }
                 });
@@ -190,30 +177,50 @@ class Panel extends JPanel{
                 elementoItem.addActionListener(new ActionListener(){//accion
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        JFileChooser guardarArchivos=new JFileChooser();
-                            int opc=guardarArchivos.showSaveDialog(null);
-                            if(opc==JFileChooser.APPROVE_OPTION){
-                                File archivo=guardarArchivos.getSelectedFile();
-                                listFile.set(tPane.getSelectedIndex(), archivo);
-                                tPane.setTitleAt(tPane.getSelectedIndex(), archivo.getName());
-                                try{
-                                    FileWriter fw=new FileWriter(listFile.get(tPane.getSelectedIndex()).getPath());
-                                    String texto=listAreaDeTexto.get(tPane.getSelectedIndex()).getText();
-                                    for(int i=0;i<texto.length();i++){
-                                        fw.write(texto.charAt(i));//escribi carracter por carracter hasta tener la misma cantidad de carracteres 
-                                    }
-                                    fw.close();
-                                }catch(IOException el){
-                                    el.printStackTrace();
-                                }
-                            }
+                        guardadoComo();
                     }
                 });
             }
         }else if(menu.equals("editar")){
             editar.add(elementoItem);
+            if(accion.equals("deshacer")){
+                elementoItem.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if(listManager.get(tPane.getSelectedIndex()).canUndo()) listManager.get(tPane.getSelectedIndex()).undo();
+                    }
+                    
+                });
+
+            }
+            else if(accion.equals("rehacer")){
+                elementoItem.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                       if(listManager.get(tPane.getSelectedIndex()).canRedo()) listManager.get(tPane.getSelectedIndex()).redo();
+                    }
+                    
+                });
+            }
+            else if(accion.equals("cortar")){
+                elementoItem.addActionListener(new DefaultEditorKit.CutAction());
+            }
+            else if(accion.equals("copiar")){
+                elementoItem.addActionListener(new DefaultEditorKit.CopyAction());
+            }
+            else if(accion.equals("pegar")){
+                elementoItem.addActionListener(new DefaultEditorKit.PasteAction());
+            }
         }else if(menu.equals("seleccion")){
             seleccion.add(elementoItem);
+            elementoItem.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    listAreaDeTexto.get(tPane.getSelectedIndex()).selectAll();;
+                }
+                
+            });
         }else if(menu.equals("ver")){
             ver.add(elementoItem);
         }
@@ -226,6 +233,8 @@ class Panel extends JPanel{
         listFile.add(new File(""));
         listAreaDeTexto.add(new JTextPane());
         listScrool.add(new JScrollPane(listAreaDeTexto.get(contadorPanel)));
+        listManager.add(new UndoManager());//SIRVE PARA RASTREAR LOS CAMBIOS DEL AREA DE TEXTO
+        listAreaDeTexto.get(contadorPanel).getDocument().addUndoableEditListener(listManager.get(contadorPanel));//relaciono el area de texto con el undoManager
 
         ventana.add(listScrool.get(contadorPanel));
 
@@ -233,6 +242,25 @@ class Panel extends JPanel{
         tPane.setSelectedIndex(contadorPanel);
         contadorPanel++;
         existePanel=true;
+    }
+    public void guardadoComo(){
+        JFileChooser guardarArchivos=new JFileChooser();
+                            int opc=guardarArchivos.showSaveDialog(null);
+                            if(opc==JFileChooser.APPROVE_OPTION){
+                                File archivo=guardarArchivos.getSelectedFile();
+                                listFile.set(tPane.getSelectedIndex(), archivo);
+                                tPane.setTitleAt(tPane.getSelectedIndex(), archivo.getName());
+                                try{
+                                    FileWriter fw=new FileWriter(listFile.get(tPane.getSelectedIndex()).getPath());
+                                    String texto=listAreaDeTexto.get(tPane.getSelectedIndex()).getText();
+                                    for(int i=0;i<texto.length();i++){
+                                        fw.write(texto.charAt(i));//escribi carracter por carracter hasta tener la misma cantidad de carracteres 
+                                    }
+                                    fw.close();
+                                }catch(IOException el){
+                                    el.printStackTrace();
+                                }
+                            }
     }
     public void eliminarUltimoPanel(){
         listAreaDeTexto.remove(tPane.getTabCount() - 1);
@@ -252,6 +280,7 @@ class Panel extends JPanel{
     private ArrayList<File> listFile;
     private ArrayList<JScrollPane>listScrool;
     private ArrayList<JTextPane> listAreaDeTexto;
+    private ArrayList<UndoManager> listManager;
 
     private JMenuBar menu;
     private JMenu archivo,editar,seleccion,ver,apariencia;
