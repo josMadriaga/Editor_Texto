@@ -1,8 +1,13 @@
 package madriaga.jose.editor;
 
 import java.awt.Color;
+import java.awt.Container;
+import java.awt.Image;
+import java.net.URL;
 import java.util.ArrayList;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.text.AttributeSet;
@@ -73,7 +78,7 @@ public class Utilidades {
             }
         }else  if(tipo.equals("Dark")){
             for(JTextPane ta:textArea){
-                ta.selectAll();
+                ta.selectAll(); 
                 StyleContext sc=StyleContext.getDefaultStyleContext();
                 //PARA EL COLOR DEL TEXTO
                 AttributeSet aset=sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground,Color.WHITE);//SimpleAttributeSet.EMPTY=es un objeto vacio,porque apenas se ha creado. Las letras color negro por el fondo blanco. 
@@ -84,6 +89,14 @@ public class Utilidades {
                 ta.setBackground(Color.DARK_GRAY);
             }
         }
+    }
+    //------------------------------------------------------------------------
+    //-----------------------------Button-------------------------------------
+    public static JButton addButton(URL url, Object objContenedor, String rotulo){
+            JButton button=new JButton(new ImageIcon(new ImageIcon(url).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
+            button.setToolTipText(rotulo);
+            ( (Container) objContenedor).add(button);
+            return button;
     }
     //------------------------------------------------------------------------
 }

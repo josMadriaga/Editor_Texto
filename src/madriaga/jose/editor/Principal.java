@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
@@ -18,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextPane;
+import javax.swing.JToolBar;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.undo.UndoManager;
 
@@ -91,9 +93,28 @@ class Panel extends JPanel {
         listScrool = new ArrayList<JScrollPane>();// scroll es la barra de desplazamineto
         listManager = new ArrayList<UndoManager>();
         // ------------------------------------
+        //..........barra de herramientas------
+        herramientas=new JToolBar(JToolBar.HORIZONTAL);
+        url=Principal.class.getResource("/madriaga/jose/img/cerrar.png");
+        Utilidades.addButton(url,herramientas, "cerrar pestaña").addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+              if(tPane.getSelectedIndex()!=-1) eliminarUltimoPanel();
+            }
+        });;
+        url=Principal.class.getResource("/madriaga/jose/img/new-file.png");
+        Utilidades.addButton(url,herramientas,"abrir pestaña").addActionListener(new ActionListener() {
 
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                creaPanel();
+            }
+            
+        });
+        //-------------------------------------
         add(panelMenu);
         add(tPane);
+        add(herramientas);
 
     }
 
@@ -327,12 +348,18 @@ class Panel extends JPanel {
     }
 
     public void eliminarUltimoPanel() {
-        listAreaDeTexto.remove(tPane.getTabCount() - 1);
-        listScrool.remove(tPane.getTabCount() - 1);
-        listFile.remove(tPane.getTabCount() - 1);
-        tPane.remove(tPane.getTabCount() - 1);// eliminamos el panel creado por ultima vez porque ya existe el panel y
-                                              // no lo necesitamos
-        contadorPanel--;
+        if (tPane.getTabCount() > 0) {
+            listAreaDeTexto.remove(tPane.getTabCount() - 1);
+            listScrool.remove(tPane.getTabCount() - 1);
+            listFile.remove(tPane.getTabCount() - 1);
+            listManager.remove(tPane.getTabCount() - 1);
+            tPane.remove(tPane.getTabCount() - 1);// eliminamos el panel creado por ultima vez porque ya existe el panel
+                                                  // y
+                                                  // no lo necesitamos
+            contadorPanel--;
+            if (tPane.getTabCount() < 1)
+                existePanel = false;
+        }
     }
 
     private String tipoFondo="White";
@@ -351,5 +378,7 @@ class Panel extends JPanel {
     private JMenuBar menu;
     private JMenu archivo, editar, seleccion, ver, apariencia;
     private JMenuItem elementoItem;
+    private JToolBar herramientas;
+    private URL url;
 
 }
