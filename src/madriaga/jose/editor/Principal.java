@@ -2,6 +2,7 @@ package madriaga.jose.editor;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.BorderLayout;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -43,8 +44,12 @@ class Marco extends JFrame {
 
 class Panel extends JPanel {
     public Panel() {
+        
+        setLayout(new BorderLayout());
+
         // ---------------menu---------------------
         JPanel panelMenu = new JPanel();
+        panelMenu.setLayout(new BorderLayout());//agrego un estilo layout a la disposicion de elemetos del program
         menu = new JMenuBar();
 
         archivo = new JMenu("Archivo");
@@ -83,7 +88,7 @@ class Panel extends JPanel {
         creaItem("Clasic", "apariencia", "normal");
         creaItem("Dark", "apariencia", "dark");
         // -------------------------------------------------------
-        panelMenu.add(menu);
+        panelMenu.add(menu, BorderLayout.NORTH);//organiza el menu en la seccion norte
         // --------------------------------------
 
         // ------------------Area de texto-----
@@ -94,7 +99,7 @@ class Panel extends JPanel {
         listManager = new ArrayList<UndoManager>();
         // ------------------------------------
         //..........barra de herramientas------
-        herramientas=new JToolBar(JToolBar.HORIZONTAL);
+        herramientas=new JToolBar(JToolBar.VERTICAL);
         url=Principal.class.getResource("/madriaga/jose/img/cerrar.png");
         Utilidades.addButton(url,herramientas, "cerrar pestaña").addActionListener(new ActionListener() {
             @Override
@@ -112,9 +117,9 @@ class Panel extends JPanel {
             
         });
         //-------------------------------------
-        add(panelMenu);
-        add(tPane);
-        add(herramientas);
+        add(panelMenu, BorderLayout.NORTH);
+        add(tPane, BorderLayout.CENTER);
+        add(herramientas,BorderLayout.WEST);
 
     }
 
@@ -300,6 +305,7 @@ class Panel extends JPanel {
     public void creaPanel() {
         ventana = new JPanel();
         // areaTexto=new JTextPane();
+        ventana.setLayout(new BorderLayout());//agrego formato layout a la ventana donde esta ubicada el area de texto
 
         listFile.add(new File(""));
         listAreaDeTexto.add(new JTextPane());
@@ -314,7 +320,7 @@ class Panel extends JPanel {
                                                                                                                  // el
                                                                                                                  // undoManager
 
-        ventana.add(listScrool.get(contadorPanel));
+        ventana.add(listScrool.get(contadorPanel),BorderLayout.CENTER);//siempre especificar en el centro para prevenir errrores
 
         tPane.addTab("TITLE", ventana);// agrego la nueva ventana
 
