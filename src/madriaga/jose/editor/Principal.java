@@ -2,7 +2,10 @@ package madriaga.jose.editor;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.BorderLayout;
+import java.awt.Image;
+import java.awt.event.MouseEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -11,8 +14,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -34,16 +39,16 @@ public class Principal {
 }
 
 class Marco extends JFrame {
-    public Marco() {
+    public Marco( ) {
         setBounds(300, 300, 300, 300);
         setTitle("josEditor");
 
-        add(new Panel());
+        add(new Panel(this));
     }
 }
 
 class Panel extends JPanel {
-    public Panel() {
+    public Panel(JFrame marco) {
         
         setLayout(new BorderLayout());
 
@@ -117,10 +122,45 @@ class Panel extends JPanel {
             
         });
         //-------------------------------------
+        //------------panel extra---------------
+        panelExtra=new JPanel();
+        panelExtra.setLayout(new BorderLayout());
+        JPanel panelIzq=new JPanel();
+        labelAncla =new JLabel();
+        url=Principal.class.getResource("/madriaga/jose/img/alfiler-sin-color.png");
+        labelAncla.setIcon(new ImageIcon(new ImageIcon(url).getImage().getScaledInstance(10, 10, Image.SCALE_SMOOTH)));
+        labelAncla.addMouseListener(new MouseAdapter(){//mouseAdapter permite elegir un metodo de la interfaz mouselistener y no escribir todos para utilizarla.
+            public void mouseEntered (MouseEvent ev){//al pasar por encima cambia de img
+                url=Principal.class.getResource("/madriaga/jose/img/alfiler.png");
+                labelAncla.setIcon(new ImageIcon(new ImageIcon(url).getImage().getScaledInstance(10, 10, Image.SCALE_SMOOTH)));
+
+            }
+
+            public void mouseExited (MouseEvent ev ){//si hace click con verdadero cambia la img y si es falsa vuelve a la original
+                if(ancla){
+                    url=Principal.class.getResource("/madriaga/jose/img/alfiler.png");
+                    labelAncla.setIcon(new ImageIcon(new ImageIcon(url).getImage().getScaledInstance(10, 10, Image.SCALE_SMOOTH)));
+                }else{
+                    url=Principal.class.getResource("/madriaga/jose/img/alfiler-sin-color.png");
+                    labelAncla.setIcon(new ImageIcon(new ImageIcon(url).getImage().getScaledInstance(10, 10, Image.SCALE_SMOOTH)));
+                }
+            }
+            public void mousePressed(MouseEvent ev){//se invierte el valor del estado del ancla
+                ancla =!ancla;
+                marco.setAlwaysOnTop(ancla);
+            }
+        });
+
+        panelIzq.add(labelAncla);
+        JPanel panelCentro=new JPanel();
+
+        panelExtra.add(panelIzq,BorderLayout.WEST);
+        panelExtra.add(panelCentro, BorderLayout.CENTER);
+        //--------------------------------------
         add(panelMenu, BorderLayout.NORTH);
         add(tPane, BorderLayout.CENTER);
         add(herramientas,BorderLayout.WEST);
-
+        add(panelExtra, BorderLayout.SOUTH);//agrego el panel extra en el sur de mi panel principal
     }
 
     public void creaItem(String rotulo, String menu, String accion) {
@@ -375,6 +415,7 @@ class Panel extends JPanel {
 
     private JTabbedPane tPane;
     private JPanel ventana;
+    private JPanel panelExtra;
     // private JTextPane areaTexto;
     private ArrayList<File> listFile;
     private ArrayList<JScrollPane> listScrool;
@@ -386,5 +427,8 @@ class Panel extends JPanel {
     private JMenuItem elementoItem;
     private JToolBar herramientas;
     private URL url;
+
+    private boolean ancla =false;
+    private JLabel labelAncla;
 
 }
